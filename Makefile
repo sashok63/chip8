@@ -23,7 +23,6 @@ ifeq ($(OS),Windows_NT)
 else
     CFLAGS += `sdl2-config --cflags`
     LDFLAGS += `sdl2-config --libs`
-    RM = rm -f
 endif
 
 .PHONY: all clean
