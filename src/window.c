@@ -5,27 +5,29 @@ void update_timer(chip8_t *chip8, sdl_t *sdl)
     if (chip8->delay_timer > 0)
     {
         chip8->delay_timer--;
+        // printf("Delay Timer: %d\n", chip8->delay_timer);
     }
 
     if (chip8->sound_timer > 0)
     {
         chip8->sound_timer--;
         SDL_PauseAudioDevice(sdl->device, 0);
+        // printf("Sound Timer: %d\n", chip8->sound_timer);
     }
     else
     {
         SDL_PauseAudioDevice(sdl->device, 1);
-    }   
+    }
 }
 
 void callback(void *userdata, uint8_t *stream, int len)
 {
     (void)userdata;
 
-    int8_t *audio_data = (int8_t *)stream;
+    uint8_t *audio_data = stream;
     uint16_t sample_index = 0;
-    const int16_t wave_period = 44100 / 440;
-    const int16_t half_period = wave_period / 2;
+    const uint8_t wave_period = 44100 / 440;
+    const uint8_t half_period = wave_period / 2;
 
     for (uint16_t i = 0; i < len / 2; i++)
     {
@@ -77,32 +79,40 @@ void window_init(sdl_t *sdl)
 
 void window_print(sdl_t *sdl, chip8_t *chip8)
 {
-    SDL_Rect rect = {.x = 0, .y = 0, .w = SCALE, .h = SCALE};
+    uint8_t scale = (chip8->mod.SUPERCHIP && chip8->hr.HiRes) ? SCALE_S : SCALE;
+    uint8_t screen_width = (chip8->mod.SUPERCHIP && chip8->hr.HiRes) ? SCREEN_WIDTH_S : SCREEN_WIDTH;
+    uint8_t screen_height = (chip8->mod.SUPERCHIP && chip8->hr.HiRes) ? SCREEN_HEIGHT_S : SCREEN_HEIGHT;
 
-    for (uint32_t i = 0; i < sizeof(chip8->gfx); i++)
+    SDL_Rect rect = {.w = scale, .h = scale};
+    
+    for (uint8_t y = 0; y < screen_height; y++)
     {
-        rect.x = (i % SCREEN_WIDTH) * SCALE; 
-        rect.y = (i / SCREEN_WIDTH) * SCALE;
-
-        if (chip8->gfx[i])
+        for (uint8_t x = 0; x < screen_width; x++)
         {
-            SDL_SetRenderDrawColor(sdl->renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(sdl->renderer, &rect);
+            rect.x = x * scale;
+            rect.y = y * scale;
+            
+            uint32_t i = y * screen_width + x;
+            
+            if (chip8->gfx[i])
+            {
+                SDL_SetRenderDrawColor(sdl->renderer, 255, 255, 255, 255);
+                SDL_RenderFillRect(sdl->renderer, &rect);
 
-            //Draw pixel outline
-            SDL_SetRenderDrawColor(sdl->renderer, 0, 0, 0, 255);
-            SDL_RenderDrawRect(sdl->renderer, &rect);
-        }
-        else
-        {
-            SDL_SetRenderDrawColor(sdl->renderer, 0, 0, 0, 255);
-            SDL_RenderFillRect(sdl->renderer, &rect);
+                //Draw pixel outline
+                SDL_SetRenderDrawColor(sdl->renderer, 0, 0, 0, 255);
+                SDL_RenderDrawRect(sdl->renderer, &rect);
+            }
+            else
+            {
+                SDL_SetRenderDrawColor(sdl->renderer, 0, 0, 0, 255);
+                SDL_RenderFillRect(sdl->renderer, &rect);
+            }
         }
     }
     
     SDL_RenderPresent(sdl->renderer);
 }
-
 
 void window_clear(sdl_t *sdl)
 {    

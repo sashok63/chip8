@@ -11,8 +11,8 @@ make
 
 ## Usage
 ```bash
-./chip8 <path-to-rom_file.ch8> [-s/-xo] - on Linux
-.\chip8 <path-to-rom_file.ch8> [-s/-xo] - on Windows
+./chip8 <rom.ch8> [-s/-xo] - on Linux
+.\chip8 <rom.ch8> [-s/-xo] - on Windows
 
 -s for SUPERCHIP
 -xo for XOCHIP

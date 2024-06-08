@@ -19,6 +19,7 @@ ifeq ($(OS),Windows_NT)
     CFLAGS += -IC:/SDL2/include
     LDFLAGS += -LC:/SDL2/lib -lSDL2main -lSDL2
     TARGET := $(TARGET).exe
+    RM = del /Q
 else
     CFLAGS += `sdl2-config --cflags`
     LDFLAGS += `sdl2-config --libs`

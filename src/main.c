@@ -1,5 +1,11 @@
-#define SDL_MAIN_HANDLED
+// #define SDL_MAIN_HANDLED
 #include "window.h"
+
+size_t get_time_in_ms() {
+    struct timespec spec;
+    clock_gettime(CLOCK_MONOTONIC, &spec);
+    return spec.tv_sec * 1000 + spec.tv_nsec / 1e6;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -29,6 +35,11 @@ int main(int argc, char const *argv[])
 
     srand(time(NULL));
 
+    size_t last_timer_update = get_time_in_ms();
+    size_t last_instruction_update = get_time_in_ms();
+    size_t timer_interval = 1000 / 60;                  //60 Hz for timer
+    size_t instruction_interval = 1000 / 1000;          //700 Hz for instructions
+
     while (chip8.state != QUIT)
     {
         do
@@ -36,12 +47,20 @@ int main(int argc, char const *argv[])
             keyboard(&chip8, mod, rom_file);
         } while (chip8.state == PAUSED);
 
-        for (uint8_t i = 0; i < 700 / 60; i++)
+        size_t current_time = get_time_in_ms();
+
+        if (current_time - last_instruction_update >= instruction_interval)
         {
             instruction_execution(&chip8);
+            // db_instruction_execution(&chip8);
+            last_instruction_update = current_time;
         }
 
-        SDL_Delay(16.7f);
+        if (current_time - last_timer_update >= timer_interval)
+        {
+            update_timer(&chip8, &sdl);
+            last_timer_update = current_time;
+        }
 
         if (chip8.draw_flag)
         {
@@ -49,8 +68,9 @@ int main(int argc, char const *argv[])
             chip8.draw_flag = false;
         }
 
-        update_timer(&chip8, &sdl);
+        SDL_Delay(1);        
     }
     
+    SDL_Quit();
     return 0;
 }

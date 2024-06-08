@@ -1,11 +1,5 @@
 #include "chip8.h"
 
-#define WINDOW_WIDTH 1280
-#define WINDOW_HEIGHT 640
-
-#define SCREEN_WIDTH 64
-#define SCREEN_HEIGHT 32
-
 typedef struct {
     SDL_Window *window; 
     SDL_Renderer *renderer;
@@ -18,3 +12,6 @@ void audio_init(sdl_t *sdl);
 void window_init(sdl_t *sdl);
 void window_print(sdl_t *sdl, chip8_t *chip8);
 void window_clear(sdl_t *sdl);
+
+bool calculate_pixel_value_for_hires(chip8_t *chip8, uint8_t x, uint8_t y);
+bool calculate_pixel_value_for_regular(chip8_t *chip8, uint8_t x, uint8_t y);
