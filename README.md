@@ -2,7 +2,7 @@
 * CHIP8 implementation in C with SDL2 library
 
 ## Still in work
-* Mods for SUPERCHIP, XOCHIP
+* Mod for XOCHIP
 
 ## Building 
 ```bash

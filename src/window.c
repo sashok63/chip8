@@ -5,14 +5,14 @@ void update_timer(chip8_t *chip8, sdl_t *sdl)
     if (chip8->delay_timer > 0)
     {
         chip8->delay_timer--;
-        // printf("Delay Timer: %d\n", chip8->delay_timer);
+        // printf("Delay Timer: %d\n", chip8->delay_timer);     //For debug purpose
     }
 
     if (chip8->sound_timer > 0)
     {
         chip8->sound_timer--;
         SDL_PauseAudioDevice(sdl->device, 0);
-        // printf("Sound Timer: %d\n", chip8->sound_timer);
+        // printf("Sound Timer: %d\n", chip8->sound_timer);     //For debug purpose
     }
     else
     {

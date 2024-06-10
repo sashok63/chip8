@@ -29,6 +29,8 @@ int main(int argc, char const *argv[])
 
     srand(time(NULL));
 
+    uint16_t inst_per_sec = chip8.mod.CHIP ? 700 : 1200;
+
     while (chip8.state != QUIT)
     {
         do
@@ -38,7 +40,7 @@ int main(int argc, char const *argv[])
 
         size_t start_perf = SDL_GetPerformanceFrequency();
 
-        for (uint8_t i = 0; i < 700 / 60; i++)
+        for (uint8_t i = 0; i < inst_per_sec / 60; i++)
         {
             instruction_execution(&chip8);
             // db_instruction_execution(&chip8);

@@ -65,24 +65,20 @@ void system_init(chip8_t *chip8, const char *mod)
 
     memset(chip8, 0, sizeof(chip8_t));
     memcpy(&chip8->ram[FONT_START], font, sizeof(font));
+    chip8->PC = START_ADDRESS;
+    chip8->state = RUNNING;
 
     if (strcmp(mod, "-s") == 0)
     {
         chip8->mod.SUPERCHIP = true;
-        chip8->mod.CHIP = false;
-        chip8->mod.XOCHIP = false;
     }
     else if (strcmp(mod, "-xo") == 0)
     {
         chip8->mod.XOCHIP = true;
-        chip8->mod.CHIP = false;
-        chip8->mod.SUPERCHIP = false;
     }
     else if (strcmp(mod, "CHIP8") == 0)
     {
         chip8->mod.CHIP = true;
-        chip8->mod.SUPERCHIP = false;
-        chip8->mod.XOCHIP = false;
     }
     else
     {
@@ -94,10 +90,6 @@ void system_init(chip8_t *chip8, const char *mod)
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
-    
-    chip8->PC = START_ADDRESS;
-    chip8->SP = chip8->stack[0];
-    chip8->state = RUNNING;
 }
 
 void keyboard(chip8_t *chip8, const char *mod, const char *rom_file)

@@ -134,7 +134,7 @@ void instruction_execution(chip8_t *chip8)
                     fprintf(stderr, "Error: Undefined instruction encountered.\n");
                     fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
                     fprintf(stderr, "Binary: ");
-                    for (int i = 15; i >= 0; i--)
+                    for (int8_t i = 15; i >= 0; i--)
                     {
                         fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
                     }
@@ -337,7 +337,7 @@ void instruction_execution(chip8_t *chip8)
                     fprintf(stderr, "Error: Undefined instruction encountered.\n");
                     fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
                     fprintf(stderr, "Binary: ");
-                    for (int i = 15; i >= 0; i--)
+                    for (int8_t i = 15; i >= 0; i--)
                     {
                         fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
                     }
@@ -376,7 +376,7 @@ void instruction_execution(chip8_t *chip8)
             }
             else if (chip8->mod.SUPERCHIP == true)
             {
-                chip8->PC = chip8->V[chip8->inst.X] + chip8->inst.NNN;
+                chip8->PC = chip8->V[chip8->inst.X] + chip8->inst.NNN;   
             }
             break;
 
@@ -522,7 +522,7 @@ void instruction_execution(chip8_t *chip8)
                     fprintf(stderr, "Error: Undefined instruction encountered.\n");
                     fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
                     fprintf(stderr, "Binary: ");
-                    for (int i = 15; i >= 0; i--)
+                    for (int8_t i = 15; i >= 0; i--)
                     {
                         fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
                     }
@@ -685,7 +685,7 @@ void instruction_execution(chip8_t *chip8)
                     fprintf(stderr, "Error: Undefined instruction encountered.\n");
                     fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
                     fprintf(stderr, "Binary: ");
-                    for (int i = 15; i >= 0; i--)
+                    for (int8_t i = 15; i >= 0; i--)
                     {
                         fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
                     }
@@ -699,7 +699,7 @@ void instruction_execution(chip8_t *chip8)
             fprintf(stderr, "Error: Undefined instruction encountered.\n");
             fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
             fprintf(stderr, "Binary: ");
-            for (int i = 15; i >= 0; i--)
+            for (int8_t i = 15; i >= 0; i--)
             {
                 fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
             }
@@ -775,7 +775,7 @@ void db_instruction_execution(chip8_t *chip8)
                 default:
                     fprintf(stderr, "Error: Undefined instruction encountered.\n");
                     fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    for (int i = 15; i >= 0; i--)
+                    for (int8_t i = 15; i >= 0; i--)
                     {
                         fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
                     }
@@ -883,7 +883,7 @@ void db_instruction_execution(chip8_t *chip8)
                 default:
                     fprintf(stderr, "Error: Undefined instruction encountered.\n");
                     fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    for (int i = 15; i >= 0; i--)
+                    for (int8_t i = 15; i >= 0; i--)
                     {
                         fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
                     }
@@ -940,7 +940,7 @@ void db_instruction_execution(chip8_t *chip8)
                 default:
                     fprintf(stderr, "Error: Undefined instruction encountered.\n");
                     fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    for (int i = 15; i >= 0; i--)
+                    for (int8_t i = 15; i >= 0; i--)
                     {
                         fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
                     }
@@ -978,12 +978,14 @@ void db_instruction_execution(chip8_t *chip8)
                            chip8->inst.X, chip8->V[chip8->inst.X], chip8->I);
                     break;
 
-                case 0x0029: //Set I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font
+                case 0x0029: //Set I to the location of the sprite for the character in VX.
+                             //Characters 0-F (in hexadecimal) are represented by a 4x5 font
                     chip8->inst.X = (chip8->inst.opcode >> 8) & 0x0F;
                     printf("Opcode F029: Set I to sprite location for character in V[%d]\n", chip8->inst.X);
                     break;
                 
-                case 0x0030: //Set I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font
+                case 0x0030: //Set I to the location of the sprite for the character in VX.
+                             //Characters 0-F (in hexadecimal) are represented by a 4x5 font
                     chip8->inst.X = (chip8->inst.opcode >> 8) & 0x0F;
                     printf("Opcode F030: Set I to extended sprite location for character in V[%d]\n", chip8->inst.X);
                     break;
@@ -1033,7 +1035,7 @@ void db_instruction_execution(chip8_t *chip8)
         default:
             fprintf(stderr, "Error: Undefined instruction encountered.\n");
             fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-            for (int i = 15; i >= 0; i--)
+            for (int8_t i = 15; i >= 0; i--)
             {
                 fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
             }
