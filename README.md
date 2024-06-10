@@ -1,5 +1,5 @@
 # CHIP8
-* CHIP8 implementation in C with SDL2 library
+* CHIP8, SUPERCHIP implementation in C with SDL2 library
 
 ## Still in work
 * Mod for XOCHIP
