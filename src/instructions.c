@@ -1,5 +1,18 @@
 #include "chip8.h"
 
+void handle_undef_inst(chip8_t *chip8)
+{
+    fprintf(stderr, "Error: Undefined instruction encountered.\n");
+    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
+    fprintf(stderr, "Binary: ");
+    for (int8_t i = 15; i >= 0; i--)
+    {
+        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
+    }
+    fprintf(stderr, "\n");
+    fprintf(stderr, "PC (Program Counter): 0x%X\n", chip8->PC);
+}
+
 void instruction_execution(chip8_t *chip8)
 {
     bool carry_flag = false;
@@ -126,20 +139,10 @@ void instruction_execution(chip8_t *chip8)
 
                 //Opcode 00FD: Exit the interpreter (halt the program)
                 case 0x00FD:
-                    fprintf(stdout, "Program halted by 00FD instruction.\n");
-                    SDL_Quit();
                     break;
 
                 default:
-                    fprintf(stderr, "Error: Undefined instruction encountered.\n");
-                    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    fprintf(stderr, "Binary: ");
-                    for (int8_t i = 15; i >= 0; i--)
-                    {
-                        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-                    }
-                    fprintf(stderr, "\n");
-                    fprintf(stderr, "PC (Program Counter): 0x%X\n", chip8->PC);
+                    handle_undef_inst(chip8);
                     break;
             }
         break;
@@ -334,15 +337,7 @@ void instruction_execution(chip8_t *chip8)
                     break;
 
                 default:
-                    fprintf(stderr, "Error: Undefined instruction encountered.\n");
-                    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    fprintf(stderr, "Binary: ");
-                    for (int8_t i = 15; i >= 0; i--)
-                    {
-                        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-                    }
-                    fprintf(stderr, "\n");
-                    fprintf(stderr, "PC (Program Counter): 0x%X\n", chip8->PC);
+                    handle_undef_inst(chip8);
                     break;
             }
             break;
@@ -519,15 +514,7 @@ void instruction_execution(chip8_t *chip8)
                     break;
 
                 default:
-                    fprintf(stderr, "Error: Undefined instruction encountered.\n");
-                    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    fprintf(stderr, "Binary: ");
-                    for (int8_t i = 15; i >= 0; i--)
-                    {
-                        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-                    }
-                    fprintf(stderr, "\n");
-                    fprintf(stderr, "PC (Program Counter): 0x%X\n", chip8->PC);
+                    handle_undef_inst(chip8);
                     break;
             }
             break;
@@ -682,34 +669,16 @@ void instruction_execution(chip8_t *chip8)
                     break;
                     
                 default:
-                    fprintf(stderr, "Error: Undefined instruction encountered.\n");
-                    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    fprintf(stderr, "Binary: ");
-                    for (int8_t i = 15; i >= 0; i--)
-                    {
-                        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-                    }
-                    fprintf(stderr, "\n");
-                    fprintf(stderr, "PC (Program Counter): 0x%X\n", chip8->PC);
+                    handle_undef_inst(chip8);
                     break;
             }
             break;
 
         default:
-            fprintf(stderr, "Error: Undefined instruction encountered.\n");
-            fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-            fprintf(stderr, "Binary: ");
-            for (int8_t i = 15; i >= 0; i--)
-            {
-                fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-            }
-            fprintf(stderr, "\n");
-            fprintf(stderr, "PC (Program Counter): 0x%X\n", chip8->PC);
+            handle_undef_inst(chip8);
             break;
     }
 }
-
-
 
 void db_instruction_execution(chip8_t *chip8)
 {
@@ -773,13 +742,7 @@ void db_instruction_execution(chip8_t *chip8)
                     break;
 
                 default:
-                    fprintf(stderr, "Error: Undefined instruction encountered.\n");
-                    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    for (int8_t i = 15; i >= 0; i--)
-                    {
-                        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-                    }
-                    fprintf(stderr, "\nPC (Program Counter): 0x%X\n", chip8->PC);
+                    handle_undef_inst(chip8);
                     break;
             }
             break;
@@ -881,13 +844,7 @@ void db_instruction_execution(chip8_t *chip8)
                     break;
 
                 default:
-                    fprintf(stderr, "Error: Undefined instruction encountered.\n");
-                    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    for (int8_t i = 15; i >= 0; i--)
-                    {
-                        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-                    }
-                    fprintf(stderr, "\nPC (Program Counter): 0x%X\n", chip8->PC);
+                    handle_undef_inst(chip8);
                     break;
             }
             break;
@@ -1021,25 +978,13 @@ void db_instruction_execution(chip8_t *chip8)
                     break;
 
                 default:
-                    fprintf(stderr, "Error: Undefined instruction encountered.\n");
-                    fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-                    for (int i = 15; i >= 0; i--)
-                    {
-                        fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-                    }
-                    fprintf(stderr, "\nPC (Program Counter): 0x%X\n", chip8->PC);
+                    handle_undef_inst(chip8);
                     break;
             }
             break;
 
         default:
-            fprintf(stderr, "Error: Undefined instruction encountered.\n");
-            fprintf(stderr, "Opcode: 0x%X\n", chip8->inst.opcode);
-            for (int8_t i = 15; i >= 0; i--)
-            {
-                fprintf(stderr, "%d", (chip8->inst.opcode >> i) & 1);
-            }
-            fprintf(stderr, "\nPC (Program Counter): 0x%X\n", chip8->PC);
+            handle_undef_inst(chip8);
             break;
     }
 }
