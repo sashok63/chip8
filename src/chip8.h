@@ -95,3 +95,4 @@ void system_init(chip8_t *chip8, const char *mod);
 void keyboard(chip8_t *chip8, const char *mod, const char *rom_file);
 void instruction_execution(chip8_t *chip8);
 void db_instruction_execution(chip8_t *chip8);
+void handle_undef_inst(chip8_t *chip8);
