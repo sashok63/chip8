@@ -42,13 +42,11 @@ void instruction_execution(chip8_t *chip8)
                 //Opcode 00FF: Enable 128x64 high-resolution graphics mode
                 case 0x00FF:
                     chip8->hr.HiRes = true;
-                    chip8->draw_flag = true;
                     break;
 
                 //Opcode 00FE: Disable high resolution graphics mode and return to 64x32
                 case 0x00FE:
                     chip8->hr.HiRes = false;
-                    chip8->draw_flag = true;
                     break;
 
                 //Opcode 00FB: Scroll the display right by 4 pixels
@@ -139,6 +137,7 @@ void instruction_execution(chip8_t *chip8)
 
                 //Opcode 00FD: Exit the interpreter (halt the program)
                 case 0x00FD:
+                    printf("EXIT\n");
                     break;
 
                 default:
@@ -392,7 +391,7 @@ void instruction_execution(chip8_t *chip8)
             chip8->inst.Y = (chip8->inst.opcode >> 4) & 0x0F;
             chip8->V[0xF] = 0;
             
-            if (chip8->mod.CHIP == true)
+            if (chip8->mod.CHIP)
             {
                 uint8_t x_coord = chip8->V[chip8->inst.X] % SCREEN_WIDTH;
                 uint8_t y_coord = chip8->V[chip8->inst.Y] % SCREEN_HEIGHT;
@@ -429,57 +428,96 @@ void instruction_execution(chip8_t *chip8)
 
                 chip8->draw_flag = true;
             }
-            else if (chip8->mod.SUPERCHIP == true)
+            else if (chip8->mod.SUPERCHIP)
             {
-                for (uint8_t byte = 0; byte < chip8->inst.N; byte++)
+                if (chip8->hr.HiRes && chip8->inst.N == 0)    //DXY0
                 {
-                    const uint8_t sprite_data = chip8->ram[chip8->I + byte];
                     uint8_t x_coord = chip8->V[chip8->inst.X];
-                    uint8_t y_coord = chip8->V[chip8->inst.Y] + byte;
+                    uint8_t y_coord = chip8->V[chip8->inst.Y];
+
+                    for (uint8_t byte = 0; byte < 16; byte++)
+                    {
+                        uint8_t sprite_data1 = chip8->ram[chip8->I + 2 * byte];
+                        uint8_t sprite_data2 = chip8->ram[chip8->I + 2 * byte + 1];
+
+                        for (uint8_t bit = 0; bit < 8; bit++)
+                        {
+                            uint8_t x1 = (x_coord + bit) % SCREEN_WIDTH_S;
+                            uint8_t x2 = (x_coord + bit + 8) % SCREEN_WIDTH_S;
+                            uint8_t y = (y_coord + byte) % SCREEN_HEIGHT_S;
+
+                            int8_t sprite_pixel1 = sprite_data1 & (0x80 >> bit);
+                            int8_t sprite_pixel2 = sprite_data2 & (0x80 >> bit);
+
+                            if (sprite_pixel1)
+                            {
+                                if (chip8->gfx[x1 + y * SCREEN_WIDTH_S])
+                                {
+                                    chip8->V[0xF] = 1;
+                                }
+                                chip8->gfx[x1 + y * SCREEN_WIDTH_S] ^= 1;
+                            }
+
+                            if (sprite_pixel2)
+                            {
+                                if (chip8->gfx[x2 + y * SCREEN_WIDTH_S])
+                                {
+                                    chip8->V[0xF] = 1;
+                                }
+                                chip8->gfx[x2 + y * SCREEN_WIDTH_S] ^= 1;
+                            }
+                        }
+                    }
+                }
+                else    //DXYN
+                {
+                    for (uint8_t byte = 0; byte < chip8->inst.N; byte++)
+                    {
+                        const uint8_t sprite_data = chip8->ram[chip8->I + byte];
+                        uint8_t x_coord = chip8->V[chip8->inst.X];
+                        uint8_t y_coord = chip8->V[chip8->inst.Y] + byte;
                     
-                    if (chip8->hr.HiRes == true)
-                    {
                         for (uint8_t bit = 0; bit < 8; bit++)
                         {
-                            uint8_t x = (x_coord + bit) % SCREEN_WIDTH_S;
-                            uint8_t y = y_coord % SCREEN_HEIGHT_S;
+                            uint8_t screen_width = chip8->hr.HiRes ? SCREEN_WIDTH_S : SCREEN_WIDTH;
+                            uint8_t screen_height = chip8->hr.HiRes ? SCREEN_HEIGHT_S : SCREEN_HEIGHT;
+                            uint8_t x = (x_coord + bit) % screen_width;
+                            uint8_t y = y_coord % screen_height;
 
-                            uint8_t sprite_pixel = sprite_data & (0x80 >> bit);
-
+                            int8_t sprite_pixel = sprite_data & (0x80 >> bit);
+                    
                             if (sprite_pixel)
                             {
-                                if (chip8->gfx[x + y * SCREEN_WIDTH_S])
+                                if (chip8->hr.HiRes)
                                 {
-                                    chip8->V[0xF] = 1;
+                                    if (chip8->gfx[x + y * SCREEN_WIDTH_S])
+                                    {
+                                        chip8->V[0xF] = 1;
+                                    }
+                                    chip8->gfx[x + y * SCREEN_WIDTH_S] ^= 1;
                                 }
+                                else    //LowRes
+                                {
+                                    uint8_t x_lowres = (x * 2) % SCREEN_WIDTH_S;
+                                    uint8_t y_lowres = (y * 2) % SCREEN_HEIGHT_S;
 
-                                chip8->gfx[x + y * SCREEN_WIDTH_S] ^= 1;
+                                    uint8_t screen_pixel = chip8->gfx[x_lowres + y_lowres * SCREEN_WIDTH_S] |
+                                                           chip8->gfx[(x_lowres + 1) % SCREEN_WIDTH_S + y_lowres * SCREEN_WIDTH_S] |
+                                                           chip8->gfx[x_lowres + ((y_lowres + 1) % SCREEN_HEIGHT_S) * SCREEN_WIDTH_S] |
+                                                           chip8->gfx[(x_lowres + 1) % SCREEN_WIDTH_S + ((y_lowres + 1) % SCREEN_HEIGHT_S) * SCREEN_WIDTH_S];
+
+                                    if (screen_pixel)
+                                    {
+                                        chip8->V[0xF] = 1;
+                                    }
+                                    
+                                    chip8->gfx[x_lowres + y_lowres * SCREEN_WIDTH_S] ^= 1;
+                                    chip8->gfx[(x_lowres + 1) % SCREEN_WIDTH_S + y_lowres * SCREEN_WIDTH_S] ^= 1;
+                                    chip8->gfx[x_lowres + ((y_lowres + 1) % SCREEN_HEIGHT_S) * SCREEN_WIDTH_S] ^= 1;
+                                    chip8->gfx[(x_lowres + 1) % SCREEN_WIDTH_S + ((y_lowres + 1) % SCREEN_HEIGHT_S) * SCREEN_WIDTH_S] ^= 1;
+                                }
                             }
                         }
-                    }
-                    else if (chip8->hr.HiRes == false)
-                    {
-                        for (uint8_t bit = 0; bit < 8; bit++)
-                        {
-                            uint8_t x = (x_coord + bit) % SCREEN_WIDTH;
-                            uint8_t y = y_coord % SCREEN_HEIGHT;
-
-                            uint8_t sprite_pixel = sprite_data & (0x80 >> bit);
-            
-                            if (sprite_pixel)
-                            {
-                                if (chip8->gfx[x + y * SCREEN_WIDTH])
-                                {
-                                    chip8->V[0xF] = 1;
-                                }
-            
-                                chip8->gfx[x + y * SCREEN_WIDTH] ^= 1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        fprintf(stderr, "0xDXYN insruction error 1\n");
                     }
                 }
                 chip8->draw_flag = true;

@@ -79,9 +79,9 @@ void window_init(sdl_t *sdl)
 
 void window_print(sdl_t *sdl, chip8_t *chip8)
 {
-    uint8_t scale = (chip8->mod.SUPERCHIP && chip8->hr.HiRes) ? SCALE_S : SCALE;
-    uint8_t screen_width = (chip8->mod.SUPERCHIP && chip8->hr.HiRes) ? SCREEN_WIDTH_S : SCREEN_WIDTH;
-    uint8_t screen_height = (chip8->mod.SUPERCHIP && chip8->hr.HiRes) ? SCREEN_HEIGHT_S : SCREEN_HEIGHT;
+    uint8_t scale = (chip8->mod.CHIP) ? SCALE : SCALE_S;
+    uint8_t screen_width = (chip8->mod.CHIP) ? SCREEN_WIDTH : SCREEN_WIDTH_S;
+    uint8_t screen_height = (chip8->mod.CHIP) ? SCREEN_HEIGHT : SCREEN_HEIGHT_S;
 
     SDL_Rect rect = {.w = scale, .h = scale};
     
@@ -100,8 +100,8 @@ void window_print(sdl_t *sdl, chip8_t *chip8)
                 SDL_RenderFillRect(sdl->renderer, &rect);
 
                 //Draw pixel outline
-                SDL_SetRenderDrawColor(sdl->renderer, 0, 0, 0, 255);
-                SDL_RenderDrawRect(sdl->renderer, &rect);
+                // SDL_SetRenderDrawColor(sdl->renderer, 0, 0, 0, 255);
+                // SDL_RenderDrawRect(sdl->renderer, &rect);
             }
             else
             {
